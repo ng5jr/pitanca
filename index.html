@@ -106,6 +106,103 @@
         color: #fff;
         display: none;
       }
+      .canvas-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 1em 0;
+        padding: 10px;
+        background: #29304b;
+        border-radius: 8px;
+      }
+      .canvas-row {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      canvas {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+      }
+      #shipCanvas,
+      #resultantCanvas {
+        background-color: #ffffff; /* Cambiado a blanco */
+        border: 2px solid #3b4562;
+        border-radius: 4px;
+        cursor: crosshair;
+        max-width: 100%;
+      }
+      #clearCanvas {
+        padding: 5px 10px;
+        background: #c33;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background 0.2s;
+      }
+      #clearCanvas:hover {
+        background: #b22;
+      }
+      input[type="color"] {
+        width: 30px;
+        height: 30px;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      input[type="range"] {
+        width: 80px;
+      }
+      .canvas-row h4 {
+        color: #ffffff;
+        margin: 0 0 10px 0;
+        text-align: center;
+        background: #2a3450;
+        padding: 5px;
+        border-radius: 4px;
+      }
+      .canvas-controls button {
+        padding: 5px 10px;
+        margin: 0 5px;
+        background: #34395e;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85em;
+        transition: background 0.2s;
+        max-width: 130px;
+        width: auto;
+      }
+
+      .canvas-controls button:hover {
+        background: #474f79;
+      }
+
+      .canvas-controls #clearCanvas,
+      .canvas-controls [id^="clearCanvas_"] {
+        background: #c33;
+      }
+
+      .canvas-controls #clearCanvas:hover,
+      .canvas-controls [id^="clearCanvas_"]:hover {
+        background: #b22;
+      }
+
+      .canvas-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
       @media (max-width: 600px) {
         form,
         #result {
@@ -896,10 +993,75 @@
         gravedad de la obra viva</label
       ><br />
 
+      <div class="question-header" data-q="20">
+        <h3>
+          20. En un buque Monohélice CPP Levógira, con Timón a Er, 10 Ns Avante
+          y Maquina Toda Atrás. Dibuje las distintas fuerzas que intervienen en
+          la popa y su resultante e indique hacia donde cae la Proa. Dicho buque
+          con Maquina Atrás: se comporta igual que un Monohélice FPP Dextrógira
+        </h3>
+        <span class="question-result"></span>
+      </div>
+      <div class="canvas-container">
+        <div class="canvas-row">
+          <div>
+            <h4>Dibuja aquí:</h4>
+            <canvas id="shipCanvas" width="400" height="300"></canvas>
+          </div>
+          <div>
+            <h4>Vector resultante:</h4>
+            <canvas id="resultantCanvas" width="400" height="300"></canvas>
+          </div>
+        </div>
+        <div class="canvas-controls">
+          <button type="button" id="clearCanvas">Borrar dibujo</button>
+          <button type="button" id="deshacer">Deshacer Ultimo</button>
+          <span>Color: </span>
+          <input type="color" id="strokeColor" value="#FF0000" />
+        </div>
+      </div>
+
       <button type="button" onclick="checkAnswers()">Corregir</button>
     </form>
     <p id="result"></p>
     <script>
+      // Haz que correct sea global
+      let correct = {
+        1.1: ["a", "b"],
+        1.2: ["c", "d"],
+        2.1: ["a", "c"],
+        2.2: ["b", "c"],
+        3.1: ["a", "d"],
+        3.2: ["b"],
+        4: ["a", "c"],
+        5.1: ["e"],
+        5.2: ["b"],
+        6.1: ["a", "c", "e"],
+        6.2: ["b"],
+        7: ["a", "b"],
+        8.1: ["a"],
+        8.2: ["a"],
+        9.1: ["c"],
+        9.2: ["b"],
+        10: ["a"],
+        11.1: ["a", "e"],
+        11.2: ["b"],
+        11.3: ["c"],
+        12.1: ["c"],
+        12.2: ["a"],
+        13: ["a", "b", "c", "d", "e"],
+        14: ["a", "c", "d"],
+        16.1: ["c"],
+        16.2: ["c"],
+        17.1: ["c", "d"],
+        17.2: ["c", "d"],
+        17.3: ["a"],
+        17.4: ["c", "d"],
+        18: ["d"],
+        19: ["d"],
+        20: ["custom"], // Pregunta del canvas
+      };
+
       function checkAnswers() {
         // Quita resaltados previos y símbolos
         document
@@ -909,44 +1071,49 @@
           .querySelectorAll(".question-result")
           .forEach((el) => (el.textContent = ""));
 
-        let correct = {
-          1.1: ["a", "b"],
-          1.2: ["c", "d"],
-          2.1: ["a", "c"],
-          2.2: ["b", "c"],
-          3.1: ["a", "d"],
-          3.2: ["b"],
-          4: ["a", "c"],
-          5.1: ["e"],
-          5.2: ["b"],
-          6.1: ["a", "c", "e"],
-          6.2: ["b"],
-          7: ["a", "b"],
-          8.1: ["a"],
-          8.2: ["a"],
-          9.1: ["c"],
-          9.2: ["b"],
-          10: ["a"],
-          11.1: ["a", "e"],
-          11.2: ["b"],
-          11.3: ["c"],
-          12.1: ["c"],
-          12.2: ["a"],
-          13: ["a", "b", "c", "d", "e"],
-          14: ["a", "c", "d"],
-          16.1: ["c"],
-          16.2: ["c"],
-          17.1: ["c", "d"],
-          17.2: ["c", "d"],
-          17.3: ["a"],
-          17.4: ["c", "d"],
-          18: ["d"],
-          19: ["d"],
-        };
+        // Elimina imágenes de respuestas correctas anteriores
+        document
+          .querySelectorAll(".respuesta-correcta-img")
+          .forEach((img) => img.remove());
+
         let score = 0;
         let total = Object.keys(correct).length;
 
+        // Evaluar pregunta del canvas separadamente
+        let canvasQuestion = document.querySelector(
+          '.question-header[data-q="20"] .question-result'
+        );
+        const canvas = document.getElementById("shipCanvas");
+
+        if (canvas && canvas.vectors && canvas.vectors.length > 0) {
+          // NO mostrar icono de correcto/incorrecto
+          // score++; // Si quieres que sume puntaje, déjalo
+        } else {
+          // NO mostrar icono de correcto/incorrecto
+        }
+
+        // Para el resto de las preguntas, seguir con el código original
         for (let key in correct) {
+          if (key === "20") continue; // Saltamos la pregunta del canvas que ya evaluamos
+
+          // Detecta si la pregunta tiene un canvas-container después del header
+          const header = document.querySelector(
+            '.question-header[data-q="' + key + '"]'
+          );
+          const hasCanvas =
+            header &&
+            header.nextElementSibling &&
+            header.nextElementSibling.classList.contains(
+              "canvas-instructions"
+            ) &&
+            header.nextElementSibling.nextElementSibling &&
+            header.nextElementSibling.nextElementSibling.classList.contains(
+              "canvas-container"
+            );
+
+          // Si tiene canvas, NO mostrar icono
+          if (hasCanvas) continue;
+
           // Resalta las respuestas correctas
           correct[key].forEach((val) => {
             let label = document.querySelector(
@@ -962,17 +1129,15 @@
           let isCorrect =
             selected.length === correct[key].length &&
             selected.every((v) => correctSet.has(v));
-          let header = document.querySelector(
-            '.question-header[data-q="' + key + '"] .question-result'
-          );
-          if (header) {
+          let headerResult = header.querySelector(".question-result");
+          if (headerResult) {
             if (isCorrect) {
-              header.textContent = "✔️";
-              header.style.color = "#00ff99";
+              headerResult.textContent = "✔️";
+              headerResult.style.color = "#00ff99";
               score++;
             } else {
-              header.textContent = "❌";
-              header.style.color = "#ff5555";
+              headerResult.textContent = "❌";
+              headerResult.style.color = "#ff5555";
             }
           }
         }
@@ -992,7 +1157,789 @@
 
         document.getElementById("result").innerHTML = resultHtml;
         document.getElementById("result").style.display = "block";
+
+        // Después de evaluar la pregunta canvas, agrega esto para cada pregunta canvas dinámica:
+
+        // Busca todos los canvas de preguntas agregadas dinámicamente
+        document.querySelectorAll(".canvas-container").forEach((container) => {
+          // Busca el id del canvas para identificar la pregunta
+          const drawCanvas = container.querySelector(
+            'canvas[id^="shipCanvas_"]'
+          );
+          if (drawCanvas) {
+            // Usa la ruta guardada en el dataset, si existe
+            const respuestaImg = container.dataset.respuestaImg;
+            if (
+              respuestaImg &&
+              !container.querySelector(".respuesta-correcta-img")
+            ) {
+              const img = document.createElement("img");
+              img.src = respuestaImg;
+              img.alt = "Respuesta correcta";
+              img.className = "respuesta-correcta-img";
+              img.style.display = "block";
+              img.style.margin = "15px auto 0 auto";
+              img.style.maxWidth = "95%";
+              img.style.border = "2px solid #00bfff";
+              img.style.borderRadius = "6px";
+              container.appendChild(img);
+            }
+          }
+        });
+
+        // Para la pregunta 20 (canvas fijo)
+        const container20 = document
+          .getElementById("shipCanvas")
+          .closest(".canvas-container");
+        if (
+          container20 &&
+          !container20.querySelector(".respuesta-correcta-img")
+        ) {
+          const img = document.createElement("img");
+          img.src = "./correcta20.JPG"; // Debes tener esta imagen en tu carpeta
+          img.alt = "Respuesta correcta";
+          img.className = "respuesta-correcta-img";
+          img.style.display = "block";
+          img.style.margin = "15px auto 0 auto";
+          img.style.maxWidth = "95%";
+          img.style.border = "2px solid #00bfff";
+          img.style.borderRadius = "6px";
+          container20.appendChild(img);
+        }
       }
+      // Canvas para dibujo de vectores
+      document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("shipCanvas");
+        const resultantCanvas = document.getElementById("resultantCanvas");
+        const ctx = canvas.getContext("2d");
+        const resultantCtx = resultantCanvas.getContext("2d");
+        const clearButton = document.getElementById("clearCanvas");
+        const undoButton = document.getElementById("deshacer");
+        const colorInput = document.getElementById("strokeColor");
+        const fixedWidth = 3;
+
+        let isDrawing = false;
+        let startX, startY;
+
+        // Dibuja la imagen exacta en ambos canvas
+        const shipImage = new Image();
+        shipImage.src = "./dextrogiro estribor.png";
+
+        shipImage.onerror = function () {
+          ctx.font = "14px Arial";
+          ctx.fillStyle = "black";
+          ctx.fillText(
+            "Error: No se pudo cargar la imagen del buque.",
+            50,
+            150
+          );
+          resultantCtx.font = "14px Arial";
+          resultantCtx.fillStyle = "black";
+          resultantCtx.fillText(
+            "Error: No se pudo cargar la imagen del buque.",
+            50,
+            150
+          );
+        };
+
+        shipImage.onload = function () {
+          drawShip();
+          drawResultantShip();
+        };
+
+        function drawShip() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const imgWidth = Math.min(canvas.width * 0.9, shipImage.width);
+          const imgHeight = Math.min(canvas.height * 0.9, shipImage.height);
+          const x = (canvas.width - imgWidth) / 2;
+          const y = (canvas.height - imgHeight) / 2;
+
+          ctx.drawImage(shipImage, x, y, imgWidth, imgHeight);
+        }
+
+        function drawResultantShip() {
+          resultantCtx.clearRect(
+            0,
+            0,
+            resultantCanvas.width,
+            resultantCanvas.height
+          );
+          // Ya no dibujamos la imagen del buque en el canvas resultante
+        }
+
+        function drawVector(context, x1, y1, x2, y2, color, width) {
+          context.beginPath();
+          context.moveTo(x1, y1);
+          context.lineTo(x2, y2);
+          context.strokeStyle = color;
+          context.lineWidth = width;
+          context.stroke();
+
+          const headlen = 10;
+          const angle = Math.atan2(y2 - y1, x2 - x1);
+
+          context.beginPath();
+          context.moveTo(x2, y2);
+          context.lineTo(
+            x2 - headlen * Math.cos(angle - Math.PI / 6),
+            y2 - headlen * Math.sin(angle - Math.PI / 6)
+          );
+          context.lineTo(
+            x2 - headlen * Math.cos(angle + Math.PI / 6),
+            y2 - headlen * Math.sin(angle + Math.PI / 6)
+          );
+          context.closePath();
+          context.fillStyle = color;
+          context.fill();
+        }
+
+        // Función para dibujar el vector resultante
+        function drawResultantVectors() {
+          drawResultantShip();
+
+          if (!canvas.vectors || canvas.vectors.length === 0) return;
+
+          // Punto inicial en el centro del canvas
+          let currentX = resultantCanvas.width / 2;
+          let currentY = resultantCanvas.height / 2;
+
+          // Dibuja cada vector consecutivamente
+          canvas.vectors.forEach((vector, index) => {
+            // Calcula el desplazamiento relativo de este vector
+            const dx = vector.end.x - vector.start.x;
+            const dy = vector.end.y - vector.start.y;
+
+            // Dibuja este vector empezando desde el punto final del anterior
+            const nextX = currentX + dx;
+            const nextY = currentY + dy;
+
+            drawVector(
+              resultantCtx,
+              currentX,
+              currentY,
+              nextX,
+              nextY,
+              vector.color,
+              vector.width
+            );
+
+            // Actualiza el punto de inicio para el siguiente vector
+            currentX = nextX;
+            currentY = nextY;
+          });
+
+          // Dibuja el vector resultante desde el centro hasta el punto final
+          resultantCtx.beginPath();
+          resultantCtx.moveTo(
+            resultantCanvas.width / 2,
+            resultantCanvas.height / 2
+          );
+          resultantCtx.lineTo(currentX, currentY);
+          resultantCtx.strokeStyle = "#00FF00"; // Verde para el vector resultante
+          resultantCtx.lineWidth = 4;
+          resultantCtx.stroke();
+
+          // Dibuja la flecha en el final del vector resultante
+          const headlen = 12;
+          const angle = Math.atan2(
+            currentY - resultantCanvas.height / 2,
+            currentX - resultantCanvas.width / 2
+          );
+
+          resultantCtx.beginPath();
+          resultantCtx.moveTo(currentX, currentY);
+          resultantCtx.lineTo(
+            currentX - headlen * Math.cos(angle - Math.PI / 6),
+            currentY - headlen * Math.sin(angle - Math.PI / 6)
+          );
+          resultantCtx.lineTo(
+            currentX - headlen * Math.cos(angle + Math.PI / 6),
+            currentY - headlen * Math.sin(angle + Math.PI / 6)
+          );
+          resultantCtx.closePath();
+          resultantCtx.fillStyle = "#00FF00";
+          resultantCtx.fill();
+        }
+
+        function startDrawing(e) {
+          isDrawing = true;
+          const rect = canvas.getBoundingClientRect();
+          startX = e.clientX - rect.left;
+          startY = e.clientY - rect.top;
+        }
+
+        function draw(e) {
+          if (!isDrawing) return;
+
+          const rect = canvas.getBoundingClientRect();
+          const currentX = e.clientX - rect.left;
+          const currentY = e.clientY - rect.top;
+
+          ctx.save();
+          drawShip();
+
+          if (canvas.vectors) {
+            canvas.vectors.forEach((vector) => {
+              drawVector(
+                ctx,
+                vector.start.x,
+                vector.start.y,
+                vector.end.x,
+                vector.end.y,
+                vector.color,
+                fixedWidth
+              );
+            });
+          }
+
+          drawVector(
+            ctx,
+            startX,
+            startY,
+            currentX,
+            currentY,
+            colorInput.value,
+            fixedWidth
+          );
+
+          ctx.restore();
+        }
+
+        function stopDrawing(e) {
+          if (!isDrawing) return;
+
+          const rect = canvas.getBoundingClientRect();
+          const endX = e.clientX - rect.left;
+          const endY = e.clientY - rect.top;
+
+          if (!canvas.vectors) canvas.vectors = [];
+          canvas.vectors.push({
+            start: { x: startX, y: startY },
+            end: { x: endX, y: endY },
+            color: colorInput.value,
+            width: fixedWidth,
+          });
+
+          isDrawing = false;
+
+          // Actualiza el canvas de resultante después de agregar un nuevo vector
+          drawResultantVectors();
+        }
+
+        // Eventos para dibujar vectores
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseout", stopDrawing);
+
+        // Soporte para dispositivos táctiles
+        canvas.addEventListener("touchstart", function (e) {
+          const touch = e.touches[0];
+          const mouseEvent = new MouseEvent("mousedown", {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+          });
+          canvas.dispatchEvent(mouseEvent);
+          e.preventDefault();
+        });
+
+        canvas.addEventListener("touchmove", function (e) {
+          const touch = e.touches[0];
+          const mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+          });
+          canvas.dispatchEvent(mouseEvent);
+          e.preventDefault();
+        });
+
+        canvas.addEventListener("touchend", function () {
+          const mouseEvent = new MouseEvent("mouseup");
+          canvas.dispatchEvent(mouseEvent);
+        });
+
+        clearButton.addEventListener("click", function () {
+          canvas.vectors = [];
+          drawShip();
+          drawResultantShip(); // Limpia también el canvas resultante
+        });
+
+        undoButton.addEventListener("click", function () {
+          if (canvas.vectors && canvas.vectors.length > 0) {
+            canvas.vectors.pop();
+            drawShip();
+
+            if (canvas.vectors.length > 0) {
+              canvas.vectors.forEach((vector) => {
+                drawVector(
+                  ctx,
+                  vector.start.x,
+                  vector.start.y,
+                  vector.end.x,
+                  vector.end.y,
+                  vector.color,
+                  fixedWidth
+                );
+              });
+            }
+
+            // Actualiza el canvas de resultante después de eliminar un vector
+            drawResultantVectors();
+          }
+        });
+
+        // Función para inicializar un nuevo canvas de dibujo
+        function initializeCanvasQuestion(
+          questionId,
+          imageSrc,
+          instructions,
+          respuestaImg
+        ) {
+          // Crea un nuevo div para la pregunta
+          const newQuestion = document.createElement("div");
+          newQuestion.className = "question-header";
+          newQuestion.setAttribute("data-q", questionId);
+
+          // Agrega el título de la pregunta
+          const title = document.createElement("h3");
+          title.textContent = `${questionId}. Dibuje los vectores de las fuerzas:`;
+
+          // Agrega el span para el resultado
+          const resultSpan = document.createElement("span");
+          resultSpan.className = "question-result";
+
+          // Agrega las instrucciones personalizadas si existen
+          const instructionsDiv = document.createElement("div");
+          instructionsDiv.className = "canvas-instructions";
+          instructionsDiv.innerHTML =
+            instructions ||
+            "Dibuja los vectores que representan las fuerzas actuantes en esta situación.";
+          instructionsDiv.style.backgroundColor = "#34395e";
+          instructionsDiv.style.padding = "10px";
+          instructionsDiv.style.borderRadius = "5px";
+          instructionsDiv.style.marginBottom = "10px";
+          instructionsDiv.style.color = "#fff";
+
+          // Estructura de los canvas
+          const canvasContainer = document.createElement("div");
+          canvasContainer.className = "canvas-container";
+
+          const canvasRow = document.createElement("div");
+          canvasRow.className = "canvas-row";
+
+          // Canvas de dibujo
+          const drawDiv = document.createElement("div");
+          const drawTitle = document.createElement("h4");
+          drawTitle.textContent = "Dibuja aquí:";
+
+          const drawCanvas = document.createElement("canvas");
+          drawCanvas.id = `shipCanvas_${questionId}`;
+          drawCanvas.width = 400;
+          drawCanvas.height = 300;
+
+          // Canvas resultante
+          const resultDiv = document.createElement("div");
+          const resultTitle = document.createElement("h4");
+          resultTitle.textContent = "Vector resultante:";
+
+          const resultCanvas = document.createElement("canvas");
+          resultCanvas.id = `resultantCanvas_${questionId}`;
+          resultCanvas.width = 400;
+          resultCanvas.height = 300;
+
+          // Controles
+          const controls = document.createElement("div");
+          controls.className = "canvas-controls";
+
+          const clearBtn = document.createElement("button");
+          clearBtn.type = "button";
+          clearBtn.id = `clearCanvas_${questionId}`;
+          clearBtn.textContent = "Borrar dibujo";
+          clearBtn.className = "clear-button"; // Añade una clase para identificar estos botones
+
+          const undoBtn = document.createElement("button");
+          undoBtn.type = "button";
+          undoBtn.id = `deshacer_${questionId}`;
+          undoBtn.textContent = "Deshacer"; // Acorta el texto
+          undoBtn.className = "undo-button"; // Añade una clase para identificar estos botones
+
+          const colorSpan = document.createElement("span");
+          colorSpan.textContent = "Color: ";
+
+          const colorInput = document.createElement("input");
+          colorInput.type = "color";
+          colorInput.id = `strokeColor_${questionId}`;
+          colorInput.value = "#FF0000";
+
+          // Ensamblar la estructura
+          drawDiv.appendChild(drawTitle);
+          drawDiv.appendChild(drawCanvas);
+
+          resultDiv.appendChild(resultTitle);
+          resultDiv.appendChild(resultCanvas);
+
+          canvasRow.appendChild(drawDiv);
+          canvasRow.appendChild(resultDiv);
+
+          controls.appendChild(clearBtn);
+          controls.appendChild(undoBtn);
+          controls.appendChild(colorSpan);
+          controls.appendChild(colorInput);
+
+          canvasContainer.appendChild(canvasRow);
+          canvasContainer.appendChild(controls);
+
+          newQuestion.appendChild(title);
+          newQuestion.appendChild(resultSpan);
+
+          // Obtener el contenedor del formulario y añadir la nueva pregunta
+          const form = document.getElementById("quizForm");
+          const corregirBtn = form.querySelector(
+            'button[onclick="checkAnswers()"]'
+          );
+          form.insertBefore(newQuestion, corregirBtn);
+          form.insertBefore(instructionsDiv, corregirBtn);
+          form.insertBefore(canvasContainer, corregirBtn);
+
+          // Inicializar la funcionalidad del canvas
+          const newCanvas = document.getElementById(`shipCanvas_${questionId}`);
+          const newResultantCanvas = document.getElementById(
+            `resultantCanvas_${questionId}`
+          );
+          initializeCanvasDrawing(
+            newCanvas,
+            newResultantCanvas,
+            imageSrc,
+            document.getElementById(`clearCanvas_${questionId}`),
+            document.getElementById(`deshacer_${questionId}`),
+            document.getElementById(`strokeColor_${questionId}`)
+          );
+
+          // Guarda la ruta de la imagen de respuesta correcta en el dataset del canvasContainer
+          canvasContainer.dataset.respuestaImg = respuestaImg || "";
+
+          // Actualizar el objeto de respuestas correctas
+          correct[questionId] = ["custom"];
+        }
+
+        // Función para inicializar la funcionalidad de dibujo en un canvas
+        function initializeCanvasDrawing(
+          canvas,
+          resultantCanvas,
+          imageSrc,
+          clearButton,
+          undoButton,
+          colorInput
+        ) {
+          const ctx = canvas.getContext("2d");
+          const resultantCtx = resultantCanvas.getContext("2d");
+          const fixedWidth = 3;
+
+          let isDrawing = false;
+          let startX, startY;
+
+          // Cargar la imagen
+          const shipImage = new Image();
+          shipImage.src = imageSrc;
+
+          shipImage.onerror = function () {
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Error: No se pudo cargar la imagen.", 50, 150);
+          };
+
+          shipImage.onload = function () {
+            drawShip();
+            drawResultantCanvas();
+          };
+
+          function drawShip() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const imgWidth = Math.min(canvas.width * 0.9, shipImage.width);
+            const imgHeight = Math.min(canvas.height * 0.9, shipImage.height);
+            const x = (canvas.width - imgWidth) / 2;
+            const y = (canvas.height - imgHeight) / 2;
+
+            ctx.drawImage(shipImage, x, y, imgWidth, imgHeight);
+          }
+
+          function drawResultantCanvas() {
+            resultantCtx.clearRect(
+              0,
+              0,
+              resultantCanvas.width,
+              resultantCanvas.height
+            );
+            // Solo limpiamos el canvas resultante, no dibujamos la imagen
+
+            // Dibujamos un punto central de referencia
+            const centerX = resultantCanvas.width / 2;
+            const centerY = resultantCanvas.height / 2;
+            resultantCtx.beginPath();
+            resultantCtx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+            resultantCtx.fillStyle = "#333";
+            resultantCtx.fill();
+          }
+
+          function drawVector(context, x1, y1, x2, y2, color, width) {
+            // Código para dibujar vectores...
+            context.beginPath();
+            context.moveTo(x1, y1);
+            context.lineTo(x2, y2);
+            context.strokeStyle = color;
+            context.lineWidth = width;
+            context.stroke();
+
+            const headlen = 10;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+
+            context.beginPath();
+            context.moveTo(x2, y2);
+            context.lineTo(
+              x2 - headlen * Math.cos(angle - Math.PI / 6),
+              y2 - headlen * Math.sin(angle - Math.PI / 6)
+            );
+            context.lineTo(
+              x2 - headlen * Math.cos(angle + Math.PI / 6),
+              y2 - headlen * Math.sin(angle + Math.PI / 6)
+            );
+            context.closePath();
+            context.fillStyle = color;
+            context.fill();
+          }
+
+          function drawResultantVectors() {
+            drawResultantCanvas();
+
+            if (!canvas.vectors || canvas.vectors.length === 0) return;
+
+            let currentX = resultantCanvas.width / 2;
+            let currentY = resultantCanvas.height / 2;
+
+            canvas.vectors.forEach((vector) => {
+              const dx = vector.end.x - vector.start.x;
+              const dy = vector.end.y - vector.start.y;
+
+              const nextX = currentX + dx;
+              const nextY = currentY + dy;
+
+              drawVector(
+                resultantCtx,
+                currentX,
+                currentY,
+                nextX,
+                nextY,
+                vector.color,
+                vector.width
+              );
+
+              currentX = nextX;
+              currentY = nextY;
+            });
+
+            // Dibujar el vector resultante
+            resultantCtx.beginPath();
+            resultantCtx.moveTo(
+              resultantCanvas.width / 2,
+              resultantCanvas.height / 2
+            );
+            resultantCtx.lineTo(currentX, currentY);
+            resultantCtx.strokeStyle = "#00FF00";
+            resultantCtx.lineWidth = 4;
+            resultantCtx.stroke();
+
+            // Dibujar la flecha
+            const headlen = 12;
+            const angle = Math.atan2(
+              currentY - resultantCanvas.height / 2,
+              currentX - resultantCanvas.width / 2
+            );
+
+            resultantCtx.beginPath();
+            resultantCtx.moveTo(currentX, currentY);
+            resultantCtx.lineTo(
+              currentX - headlen * Math.cos(angle - Math.PI / 6),
+              currentY - headlen * Math.sin(angle - Math.PI / 6)
+            );
+            resultantCtx.lineTo(
+              currentX - headlen * Math.cos(angle + Math.PI / 6),
+              currentY - headlen * Math.sin(angle + Math.PI / 6)
+            );
+            resultantCtx.closePath();
+            resultantCtx.fillStyle = "#00FF00";
+            resultantCtx.fill();
+          }
+
+          function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+          }
+
+          function draw(e) {
+            if (!isDrawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+
+            ctx.save();
+            drawShip();
+
+            if (canvas.vectors) {
+              canvas.vectors.forEach((vector) => {
+                drawVector(
+                  ctx,
+                  vector.start.x,
+                  vector.start.y,
+                  vector.end.x,
+                  vector.end.y,
+                  vector.color,
+                  fixedWidth
+                );
+              });
+            }
+
+            drawVector(
+              ctx,
+              startX,
+              startY,
+              currentX,
+              currentY,
+              colorInput.value,
+              fixedWidth
+            );
+
+            ctx.restore();
+          }
+
+          function stopDrawing(e) {
+            if (!isDrawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const endX = e.clientX - rect.left;
+            const endY = e.clientY - rect.top;
+
+            if (!canvas.vectors) canvas.vectors = [];
+            canvas.vectors.push({
+              start: { x: startX, y: startY },
+              end: { x: endX, y: endY },
+              color: colorInput.value,
+              width: fixedWidth,
+            });
+
+            isDrawing = false;
+            drawResultantVectors();
+          }
+
+          // Eventos para el canvas
+          canvas.addEventListener("mousedown", startDrawing);
+          canvas.addEventListener("mousemove", draw);
+          canvas.addEventListener("mouseup", stopDrawing);
+          canvas.addEventListener("mouseout", stopDrawing);
+
+          // Soporte táctil
+          canvas.addEventListener("touchstart", function (e) {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+              clientX: touch.clientX,
+              clientY: touch.clientY,
+            });
+            canvas.dispatchEvent(mouseEvent);
+            e.preventDefault();
+          });
+
+          canvas.addEventListener("touchmove", function (e) {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", {
+              clientX: touch.clientX,
+              clientY: touch.clientY,
+            });
+            canvas.dispatchEvent(mouseEvent);
+            e.preventDefault();
+          });
+
+          canvas.addEventListener("touchend", function () {
+            const mouseEvent = new MouseEvent("mouseup");
+            canvas.dispatchEvent(mouseEvent);
+          });
+
+          // Botones de control
+          clearButton.addEventListener("click", function () {
+            canvas.vectors = [];
+            drawShip();
+            drawResultantCanvas();
+          });
+
+          undoButton.addEventListener("click", function () {
+            if (canvas.vectors && canvas.vectors.length > 0) {
+              canvas.vectors.pop();
+              drawShip();
+
+              if (canvas.vectors.length > 0) {
+                canvas.vectors.forEach((vector) => {
+                  drawVector(
+                    ctx,
+                    vector.start.x,
+                    vector.start.y,
+                    vector.end.x,
+                    vector.end.y,
+                    vector.color,
+                    fixedWidth
+                  );
+                });
+              }
+
+              drawResultantVectors();
+            }
+          });
+        }
+
+        // Para agregar una nueva pregunta con una imagen diferente, puedes llamar a:
+        // Comenta la siguiente línea si no quieres agregar la pregunta de inmediato
+        initializeCanvasQuestion(
+          "21",
+          "./babor.png",
+          "En un buque Monohélice CPP Levógira, con Timón a Br, 4 Ns Avante y Maquina Toda Atrás. Dibuje las distintas fuerzas que intervienen en la popa y su resultante e indique hacia donde cae la Proa.",
+          "./correcta21.JPG" // Aquí pasas la imagen de la respuesta correcta
+        );
+        initializeCanvasQuestion(
+          "22",
+          "./dextrogiro estribor.png",
+          "En un buque Monohélice FPP Dextrógira, con Timón a Er, 6 Ns Atrás y Maquina Toda Atrás. Dibuje las distintas fuerzas que intervienen en la popa y su resultante e indique hacia donde cae la Proa.",
+          "./correcta22.JPG" // Aquí pasas la imagen de la respuesta correcta
+        );
+        initializeCanvasQuestion(
+          "23",
+          "./babor.png",
+          "En un buque Monohélice FPP Dextrógira, con Timón a Br, 6 Ns Atrás y Maquina Toda Atrás. Dibuje las distintas fuerzas que intervienen en la popa y su resultante e indique hacia donde cae la Proa.",
+          "./correcta23.JPG" // Aquí pasas la imagen de la respuesta correcta
+        );
+        initializeCanvasQuestion(
+          "24",
+          "./dextrogiro estribor.png",
+          "En un buque Monohélice FPP Dextrógira, con Timón a Er, 8 Ns Atrás y Maquina Todo Adelante. Dibuje las distintas fuerzas que intervienen en la popa y su resultante e indique hacia donde cae la Proa.",
+          "./correcta24.JPG" // Aquí pasas la imagen de la respuesta correcta
+        );
+        initializeCanvasQuestion(
+          "25",
+          "./babor.png",
+          "En un buque Monohélice FPP Dextrógira, con Timón a Br, 6 Ns Atrás y Maquina Todo Adelante. Dibuje las distintas fuerzas que intervienen en la popa y su resultante e indique hacia donde cae la Proa.",
+          "./correcta25.JPG" // Aquí pasas la imagen de la respuesta correcta
+        );
+      });
+
+      // Función para agregar una nueva pregunta después de cargar la página
+      // function addNewCanvasQuestion() {
+      //   // El tercer parámetro es para las instrucciones personalizadas (puede incluir HTML)
+      //     //   initializeCanvasQuestion(
+      //     "23",
+      //     "./dextrogiro estribor.png",
+      //     "En un buque Monohélice FPP Dextrógira, con Timón a Er, 6 Ns Atrás y Maquina Toda Atrás. Dibuje las distintas fuerzas que intervienen en la popa y su resultante e indique hacia donde cae la Proa.",
+      //     "./correcta22.JPG" // Aquí pasas la imagen de la respuesta correcta
+      //   );
+      // }
     </script>
   </body>
 </html>
