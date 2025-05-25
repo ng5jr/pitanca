@@ -1111,7 +1111,16 @@
         </div>
       </div>
 
-      <button type="button" onclick="checkAnswers()">Corregir</button>
+      <div style="display: flex; gap: 10px; margin-top: 1.5em">
+        <button type="button" onclick="checkAnswers()">Corregir</button>
+        <button
+          type="button"
+          onclick="location.reload()"
+          style="background: #ff5555; color: white"
+        >
+          REINICIAR
+        </button>
+      </div>
     </form>
     <p id="result"></p>
     <script>
@@ -1169,10 +1178,16 @@
           .querySelectorAll(".respuesta-correcta-img")
           .forEach((img) => img.remove());
 
-        let score = 0;
-        let total = Object.keys(correct).length;
+        // Define las preguntas canvas (ajusta si agregas más)
+        const canvasQuestions = ["20", "21", "22", "23", "24", "25"];
 
-        // Evaluar pregunta del canvas separadamente
+        // Calcula el total solo con preguntas que NO son canvas
+        let total = Object.keys(correct).filter(
+          (key) => !canvasQuestions.includes(key)
+        ).length;
+        let score = 0;
+
+        // Evaluar pregunta del canvas separadamente (no suma score ni muestra icono)
         let canvasQuestion = document.querySelector(
           '.question-header[data-q="20"] .question-result'
         );
@@ -1187,7 +1202,7 @@
 
         // Para el resto de las preguntas, seguir con el código original
         for (let key in correct) {
-          if (key === "20") continue; // Saltamos la pregunta del canvas que ya evaluamos
+          if (canvasQuestions.includes(key)) continue; // Salta las canvas
 
           // Detecta si la pregunta tiene un canvas-container después del header
           const header = document.querySelector(
@@ -1299,6 +1314,11 @@
           img.style.borderRadius = "6px";
           container20.appendChild(img);
         }
+
+        // Deshabilita todos los checkboxes después de corregir
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((cb) => (cb.disabled = true));
       }
       // Canvas para dibujo de vectores
       document.addEventListener("DOMContentLoaded", function () {
