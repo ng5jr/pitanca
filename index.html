@@ -1319,6 +1319,26 @@
         document
           .querySelectorAll('input[type="checkbox"]')
           .forEach((cb) => (cb.disabled = true));
+
+        // Sistema de puntajes en localStorage
+        let stats = JSON.parse(
+          localStorage.getItem("quizStats") || '{"perfect":0,"errores":0}'
+        );
+        if (score === total) {
+          stats.perfect += 1;
+        } else {
+          stats.errores += 1;
+        }
+        localStorage.setItem("quizStats", JSON.stringify(stats));
+
+        // Mostrar los puntajes debajo del resultado
+        let statsHtml = `
+          <div style="margin-top:1em;font-size:1em;">
+            <strong>Veces con todas correctas:</strong> ${stats.perfect}<br>
+            <strong>Veces con errores:</strong> ${stats.errores}
+          </div>
+        `;
+        document.getElementById("result").innerHTML += statsHtml;
       }
       // Canvas para dibujo de vectores
       document.addEventListener("DOMContentLoaded", function () {
