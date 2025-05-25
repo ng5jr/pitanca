@@ -240,6 +240,26 @@
     </div>
     <form id="quizForm">
       <!-- Cambia cada h3 por un div con class="question-header" y el h3 adentro -->
+      <div class="question-header" data-q="1">
+        <h3>1 Una alta relación Eslora/Manga hace que:</h3>
+        <span class="question-result"></span>
+      </div>
+      <label
+        ><input type="checkbox" name="1" value="a" /> Se tenga una mala
+        estabilidad direccional</label
+      ><br />
+      <label
+        ><input type="checkbox" name="1" value="b" /> Se tenga una buena
+        capacidad de maniobra</label
+      ><br />
+      <label
+        ><input type="checkbox" name="1" value="c" /> Se tenga una buena
+        estabilidad direccional</label
+      ><br />
+      <label
+        ><input type="checkbox" name="1" value="d" /> Se tenga una buena
+        capacidad de maniobra</label
+      ><br />
       <div class="question-header" data-q="1.1">
         <h3>
           1.1. Si un primer buque tiene una relación eslora-manga más chica que
@@ -372,6 +392,25 @@
       <label
         ><input type="checkbox" name="3.2" value="c" /> No varíe la amplitud de
         sus curvas evolutivas</label
+      ><br />
+      <div class="question-header" data-q="3.3">
+        <h3>
+          3.3. En un buque con calados parejos y con alto Cb y en presencia de
+          squat por bajofondos se puede esperar que:
+        </h3>
+        <span class="question-result"></span>
+      </div>
+      <label
+        ><input type="checkbox" name="3.3" value="a" /> El buque tienda a
+        aumentar su calado máximo</label
+      ><br />
+      <label
+        ><input type="checkbox" name="3.3" value="b" /> El buque tienda a
+        aproarse</label
+      ><br />
+      <label
+        ><input type="checkbox" name="3.3" value="c" /> El buque tienda a
+        apoparse</label
       ><br />
 
       <div class="question-header" data-q="4">
@@ -512,6 +551,26 @@
       <label
         ><input type="checkbox" name="6.2" value="d" /> No varía el ROT pero
         aumente la velocidad.</label
+      ><br />
+
+      <div class="question-header" data-q="6.3">
+        <h3>
+          6.3 Si debe planificar una derrota en aguas restringidas donde debe
+          efectuar varias caidas de rumbo, Ud. prefiere planificar las caídas
+          según:
+        </h3>
+        <span class="question-result"></span>
+      </div>
+      <label
+        ><input type="checkbox" name="6.3" value="a" /> Planificar las caídas
+        estableciendo un ROT constante.</label
+      ><br />
+      <label
+        ><input type="checkbox" name="6.3" value="b" /> Planificar las caídas
+        planificando un Radio constante.</label
+      ><br />
+      <label
+        ><input type="checkbox" name="6.3" value="c" /> Es indistinto.</label
       ><br />
 
       <div class="question-header" data-q="7">
@@ -941,6 +1000,32 @@
         popa más allá del espejo dependiendo de la relación de empujes entre la
         popa y la proa.</label
       ><br />
+      <div class="question-header" data-q="17.5">
+        <h3>
+          17.5 Si en un buque ponemos el MP todo atrás el timón todo a babor y
+          el Bow-Thruster todo a estribor, podemos esperar que el punto pivot:
+        </h3>
+        <span class="question-result"></span>
+      </div>
+      <label
+        ><input type="checkbox" name="17.5" value="a" /> Se traslade hacia proa
+        más allá de la roda dependiendo de la relación de emopujes entre popa y
+        proa</label
+      ><br />
+      <label
+        ><input type="checkbox" name="17.5" value="b" /> Se ubique entre la proa
+        y la zona media de la eslora del buque</label
+      ><br />
+      <label
+        ><input type="checkbox" name="17.5" value="c" /> Se traslade hacia popa
+        más allá del espejo dependiendo de la relación de empujes entre popa y
+        proa.</label
+      ><br />
+      <label
+        ><input type="checkbox" name="17.5" value="d" /> Se ubique entre la
+        sección media del buque y la popa pero más cerca de la sección
+        media.</label
+      ><br />
 
       <div class="question-header" data-q="18">
         <h3>
@@ -1032,24 +1117,27 @@
     <script>
       // Haz que correct sea global
       let correct = {
+        1: ["c", "d"],
         1.1: ["a", "b"],
         1.2: ["c", "d"],
         2.1: ["a", "c"],
         2.2: ["b", "c"],
         3.1: ["a", "d"],
         3.2: ["b"],
-        4: ["a", "c"],
+        3.3: ["a", "b"],
+        4: ["a", "c", "d"],
         5.1: ["e"],
         5.2: ["b"],
         6.1: ["a", "c", "e"],
         6.2: ["b"],
-        7: ["a", "b"],
+        6.3: ["b"],
+        7: ["b"],
         8.1: ["a"],
         8.2: ["a"],
         9.1: ["c"],
         9.2: ["b"],
         10: ["a"],
-        11.1: ["a", "e"],
+        11.1: ["a", "d", "e"],
         11.2: ["b"],
         11.3: ["c"],
         12.1: ["c"],
