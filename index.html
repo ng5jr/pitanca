@@ -224,6 +224,19 @@
           width: 22px;
           height: 22px;
         }
+        canvas,
+        #shipCanvas,
+        #resultantCanvas,
+        [id^="shipCanvas_"],
+        [id^="resultantCanvas_"] {
+          width: 90vw !important;
+          max-width: 90vw !important;
+          height: auto !important;
+        }
+        .canvas-row {
+          flex-direction: column;
+          align-items: center;
+        }
       }
     </style>
   </head>
@@ -1020,8 +1033,13 @@
           <input type="color" id="strokeColor" value="#FF0000" />
         </div>
       </div>
-
-      <button type="button" onclick="checkAnswers()">Corregir</button>
+      <div
+        class="buttons"
+        style="display: flex; flex-direction: row; gap: 10px"
+      >
+        <button type="button" onclick="checkAnswers()">Corregir</button>
+        <button type="button" onclick="location.reload()">Reiniciar</button>
+      </div>
     </form>
     <p id="result"></p>
     <script>
@@ -1435,9 +1453,10 @@
         // Soporte para dispositivos táctiles
         canvas.addEventListener("touchstart", function (e) {
           const touch = e.touches[0];
+          const rect = canvas.getBoundingClientRect();
           const mouseEvent = new MouseEvent("mousedown", {
-            clientX: touch.clientX,
-            clientY: touch.clientY,
+            clientX: touch.clientX - rect.left,
+            clientY: touch.clientY - rect.top,
           });
           canvas.dispatchEvent(mouseEvent);
           e.preventDefault();
@@ -1445,9 +1464,10 @@
 
         canvas.addEventListener("touchmove", function (e) {
           const touch = e.touches[0];
+          const rect = canvas.getBoundingClientRect();
           const mouseEvent = new MouseEvent("mousemove", {
-            clientX: touch.clientX,
-            clientY: touch.clientY,
+            clientX: touch.clientX - rect.left,
+            clientY: touch.clientY - rect.top,
           });
           canvas.dispatchEvent(mouseEvent);
           e.preventDefault();
@@ -1842,9 +1862,10 @@
           // Soporte táctil
           canvas.addEventListener("touchstart", function (e) {
             const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
             const mouseEvent = new MouseEvent("mousedown", {
-              clientX: touch.clientX,
-              clientY: touch.clientY,
+              clientX: touch.clientX - rect.left,
+              clientY: touch.clientY - rect.top,
             });
             canvas.dispatchEvent(mouseEvent);
             e.preventDefault();
@@ -1852,9 +1873,10 @@
 
           canvas.addEventListener("touchmove", function (e) {
             const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
             const mouseEvent = new MouseEvent("mousemove", {
-              clientX: touch.clientX,
-              clientY: touch.clientY,
+              clientX: touch.clientX - rect.left,
+              clientY: touch.clientY - rect.top,
             });
             canvas.dispatchEvent(mouseEvent);
             e.preventDefault();
@@ -1897,6 +1919,7 @@
         }
 
         // Para agregar una nueva pregunta con una imagen diferente, puedes llamar a:
+
         // Comenta la siguiente línea si no quieres agregar la pregunta de inmediato
         initializeCanvasQuestion(
           "21",
