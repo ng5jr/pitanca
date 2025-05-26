@@ -1111,8 +1111,10 @@
         </div>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: 1.5em">
-        <button type="button" onclick="checkAnswers()">Corregir</button>
+      <div id="checkdiv" style="display: flex; gap: 10px; margin-top: 1.5em">
+        <button type="button" id="check" onclick="checkAnswers()">
+          Corregir
+        </button>
         <button
           type="button"
           onclick="location.reload()"
@@ -1728,12 +1730,10 @@
 
           // Obtener el contenedor del formulario y añadir la nueva pregunta
           const form = document.getElementById("quizForm");
-          const corregirBtn = form.querySelector(
-            'button[onclick="checkAnswers()"]'
-          );
-          form.insertBefore(newQuestion, corregirBtn);
-          form.insertBefore(instructionsDiv, corregirBtn);
-          form.insertBefore(canvasContainer, corregirBtn);
+          const divInsert = form.querySelector("#checkdiv");
+          form.insertBefore(newQuestion, divInsert);
+          form.insertBefore(instructionsDiv, divInsert);
+          form.insertBefore(canvasContainer, divInsert);
 
           // Inicializar la funcionalidad del canvas
           const newCanvas = document.getElementById(`shipCanvas_${questionId}`);
